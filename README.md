@@ -1,1 +1,1 @@
-A Shapez 2 Mod
+A Shapez 2 mod that improves catapults
