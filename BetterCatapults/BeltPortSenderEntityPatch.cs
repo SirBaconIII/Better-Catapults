@@ -5,7 +5,7 @@ using System.Reflection;
 using Unity.Mathematics;
 using UnityEngine;
 
-public static class BeltPortSenderEntityPatch
+class BeltPortSenderEntityPatch
 {
     public static bool FindTarget_Prefix(Island island, int3 tile_I, Grid.Direction rotation_G, ref (BeltPortSenderEntity.SenderMode, MapEntity) __result)
     {

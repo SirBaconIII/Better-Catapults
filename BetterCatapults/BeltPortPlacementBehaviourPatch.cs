@@ -1,6 +1,6 @@
 ﻿using BetterCatapults;
 
-public static class BeltPortPlacementBehaviourPatch
+class BeltPortPlacementBehaviourPatch
 {
     public static bool DrawAdditionalHelpers_Prefix()
     {
