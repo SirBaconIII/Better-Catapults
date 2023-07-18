@@ -16,8 +16,7 @@ class BeltPortSenderEntityPatch
 
         int3 sourceTile_G = island.G_From_I(in tile_I);
         int layer = sourceTile_G.z;
-        int maxLayer = Singleton<GameCore>.G.Mode.MaxLayer;
-        int[] layerPriority = GenerateLayerPriority(layer, maxLayer, Mathf.Min(BetterCatapultsMain.layersChecked, maxLayer), BetterCatapultsMain.currentLayerCheckingMode);
+        int[] layerPriority = GenerateLayerPriority(layer, Singleton<GameCore>.G.Mode.MaxLayer, BetterCatapultsMain.layersChecked, BetterCatapultsMain.currentLayerCheckingMode);
 
         __result = (BeltPortSenderEntity.SenderMode.None, null);
 
@@ -344,7 +343,6 @@ class BeltPortSenderEntityPatch
             return true;
         }
 
-        //The Original Code
         MetaBuildingInternalVariant InternalVariant = __instance.InternalVariant;
         AnimationCurve heightCurve = InternalVariant.AnimationCurves[curveOffset].Curve;
         AnimationCurve rotationCurve = InternalVariant.AnimationCurves[curveOffset + 1].Curve;
@@ -362,7 +360,7 @@ class BeltPortSenderEntityPatch
                 case BetterCatapultsMain.TrajectoryModes.Linear:
                     if (progress < 0.5)
                     {
-                        height += (((2 * heightDifference) + 1) * progress);
+                        height += ((2 * heightDifference) + 1) * progress;
                     }
                     else
                     {
@@ -387,7 +385,7 @@ class BeltPortSenderEntityPatch
             float3 euler = new float3();
             if (BetterCatapultsMain.currentTargetingMode == BetterCatapultsMain.TargetingModes.SquareArea)
             {
-                euler = new float3(1300, 1400, 1400) * rotation;
+                euler = new float3(1300, 1800, 1400) * rotation;
 
                 switch (intRotation_G)
                 {
@@ -408,7 +406,14 @@ class BeltPortSenderEntityPatch
             else
             {
                 pos_L = new float3(progress * distance, 0f, height);
-                euler = DIRECTION_TO_ROTATION[intRotation_G] * 180f * rotation * ((distance >= 0) ? 1 : -1);
+                if (BetterCatapultsMain.sillyMode)
+                {
+                    euler = new float3(4000, 3000, 5000) * rotation;
+                }
+                else
+                {
+                    euler = DIRECTION_TO_ROTATION[intRotation_G] * 180f * rotation * ((distance >= 0) ? 1 : -1);
+                }
             }
             float3 pos_W = __instance.W_From_L(in pos_L);
             float scale = 1.01f - math.saturate((0f - scaleDecayWithDepth) * pos_W.y);
@@ -425,6 +430,11 @@ class BeltPortSenderEntityPatch
 
     public static bool RaymarchForObstacles_Prefix(ref float __result)
     {
+        if (BetterCatapultsMain.enableCollision)
+        {
+            return true;
+        }
+
         __result = -1f;
         return false;
     }

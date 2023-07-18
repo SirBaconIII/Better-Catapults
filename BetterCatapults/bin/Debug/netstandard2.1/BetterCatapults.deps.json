@@ -14,6 +14,7 @@
           "SPZGameAssembly": "0.0.0.0",
           "Unity.Mathematics": "1.0.0.0",
           "UnityEngine.CoreModule": "0.0.0.0",
+          "UnityEngine.IMGUIModule": "0.0.0.0",
           "UnityEngine.InputLegacyModule": "0.0.0.0"
         },
         "runtime": {
@@ -55,6 +56,14 @@
       "UnityEngine.CoreModule/0.0.0.0": {
         "runtime": {
           "UnityEngine.CoreModule.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "UnityEngine.IMGUIModule/0.0.0.0": {
+        "runtime": {
+          "UnityEngine.IMGUIModule.dll": {
             "assemblyVersion": "0.0.0.0",
             "fileVersion": "0.0.0.0"
           }
@@ -268,14 +277,6 @@
           }
         }
       },
-      "UnityEngine.IMGUIModule/0.0.0.0": {
-        "runtime": {
-          "UnityEngine.IMGUIModule.dll": {
-            "assemblyVersion": "0.0.0.0",
-            "fileVersion": "0.0.0.0"
-          }
-        }
-      },
       "UnityEngine.ScreenCaptureModule/0.0.0.0": {
         "runtime": {
           "UnityEngine.ScreenCaptureModule.dll": {
@@ -332,6 +333,14 @@
           }
         }
       },
+      "UnityEngine.TextRenderingModule/0.0.0.0": {
+        "runtime": {
+          "UnityEngine.TextRenderingModule.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
       "WebSocketDotNet/1.0.0.0": {
         "runtime": {
           "WebSocketDotNet.dll": {
@@ -359,14 +368,6 @@
       "UnityEngine.Physics2DModule/0.0.0.0": {
         "runtime": {
           "UnityEngine.Physics2DModule.dll": {
-            "assemblyVersion": "0.0.0.0",
-            "fileVersion": "0.0.0.0"
-          }
-        }
-      },
-      "UnityEngine.TextRenderingModule/0.0.0.0": {
-        "runtime": {
-          "UnityEngine.TextRenderingModule.dll": {
             "assemblyVersion": "0.0.0.0",
             "fileVersion": "0.0.0.0"
           }
@@ -845,6 +846,11 @@
       "serviceable": false,
       "sha512": ""
     },
+    "UnityEngine.IMGUIModule/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
     "UnityEngine.InputLegacyModule/0.0.0.0": {
       "type": "reference",
       "serviceable": false,
@@ -975,11 +981,6 @@
       "serviceable": false,
       "sha512": ""
     },
-    "UnityEngine.IMGUIModule/0.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
     "UnityEngine.ScreenCaptureModule/0.0.0.0": {
       "type": "reference",
       "serviceable": false,
@@ -1015,6 +1016,11 @@
       "serviceable": false,
       "sha512": ""
     },
+    "UnityEngine.TextRenderingModule/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
     "WebSocketDotNet/1.0.0.0": {
       "type": "reference",
       "serviceable": false,
@@ -1031,11 +1037,6 @@
       "sha512": ""
     },
     "UnityEngine.Physics2DModule/0.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "UnityEngine.TextRenderingModule/0.0.0.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

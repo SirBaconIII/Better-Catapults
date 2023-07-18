@@ -1,8 +1,9 @@
 ﻿using BetterCatapults;
+using MelonLoader;
 
 class BeltPortPlacementBehaviourPatch
 {
-    public static bool DrawAdditionalHelpers_Prefix()
+    public static bool PlacementHelpers_Prefix()
     {
         return BetterCatapultsMain.autoPlacing;
     }

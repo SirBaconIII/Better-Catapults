@@ -24,6 +24,9 @@
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\..\..\..\OneDrive\Desktop\Games\Shapez 2\shapez_2_0.0.0-alpha6.1\shapez 2_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>..\..\..\..\OneDrive\Desktop\Games\Shapez 2\shapez_2_0.0.0-alpha6.1\shapez 2_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
       <HintPath>..\..\..\..\OneDrive\Desktop\Games\Shapez 2\shapez_2_0.0.0-alpha6.1\shapez 2_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
     </Reference>

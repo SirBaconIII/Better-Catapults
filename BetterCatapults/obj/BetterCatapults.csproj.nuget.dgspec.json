@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\thebi\\Github\\Better-Catapults\\BetterCatapults\\BetterCatapults.csproj": {}
+    "C:\\Users\\thebi\\source\\repos\\BetterCatapults\\BetterCatapults\\BetterCatapults.csproj": {}
   },
   "projects": {
-    "C:\\Users\\thebi\\Github\\Better-Catapults\\BetterCatapults\\BetterCatapults.csproj": {
+    "C:\\Users\\thebi\\source\\repos\\BetterCatapults\\BetterCatapults\\BetterCatapults.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\thebi\\Github\\Better-Catapults\\BetterCatapults\\BetterCatapults.csproj",
+        "projectUniqueName": "C:\\Users\\thebi\\source\\repos\\BetterCatapults\\BetterCatapults\\BetterCatapults.csproj",
         "projectName": "BetterCatapults",
-        "projectPath": "C:\\Users\\thebi\\Github\\Better-Catapults\\BetterCatapults\\BetterCatapults.csproj",
+        "projectPath": "C:\\Users\\thebi\\source\\repos\\BetterCatapults\\BetterCatapults\\BetterCatapults.csproj",
         "packagesPath": "C:\\Users\\thebi\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\thebi\\Github\\Better-Catapults\\BetterCatapults\\obj\\",
+        "outputPath": "C:\\Users\\thebi\\source\\repos\\BetterCatapults\\BetterCatapults\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\thebi\\AppData\\Roaming\\NuGet\\NuGet.Config",
