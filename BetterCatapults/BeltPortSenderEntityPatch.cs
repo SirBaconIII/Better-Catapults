@@ -37,7 +37,7 @@ class BeltPortSenderEntityPatch
                     __result = (BeltPortSenderEntity.SenderMode.Void, null);
                 }
                 MapEntity targetEntity = island.Map.GetEntityAt_G(in targetTile_G);
-                if (targetEntity is BeltPortReceiverEntity portReceiverEntity)
+                if (targetEntity is BeltPortReceiverEntity portReceiverEntity && (BetterCatapultsMain.enableWrongRotationReceivers || targetEntity.Rotation_G == rotation_G))
                 {
                     __result = ((portReceiverEntity.Island == island) ? BeltPortSenderEntity.SenderMode.ReceiverSameIsland : BeltPortSenderEntity.SenderMode.ReceiverOtherIsland, portReceiverEntity);
                     return false;
@@ -77,7 +77,7 @@ class BeltPortSenderEntityPatch
                             __result = (BeltPortSenderEntity.SenderMode.Void, null);
                         }
                         MapEntity targetEntity = island.Map.GetEntityAt_G(in targetTile_G);
-                        if (targetEntity is BeltPortReceiverEntity portReceiverEntity)
+                        if (targetEntity is BeltPortReceiverEntity portReceiverEntity && (BetterCatapultsMain.enableWrongRotationReceivers || targetEntity.Rotation_G == rotation_G))
                         {
                             __result = ((portReceiverEntity.Island == island) ? BeltPortSenderEntity.SenderMode.ReceiverSameIsland : BeltPortSenderEntity.SenderMode.ReceiverOtherIsland, portReceiverEntity);
                             return false;
@@ -115,7 +115,7 @@ class BeltPortSenderEntityPatch
                             __result = (BeltPortSenderEntity.SenderMode.Void, null);
                         }
                         MapEntity targetEntity = island.Map.GetEntityAt_G(in targetTile_G);
-                        if (targetEntity is BeltPortReceiverEntity portReceiverEntity)
+                        if (targetEntity is BeltPortReceiverEntity portReceiverEntity && (BetterCatapultsMain.enableWrongRotationReceivers || targetEntity.Rotation_G == rotation_G))
                         {
                             __result = ((portReceiverEntity.Island == island) ? BeltPortSenderEntity.SenderMode.ReceiverSameIsland : BeltPortSenderEntity.SenderMode.ReceiverOtherIsland, portReceiverEntity);
                             return false;
@@ -174,7 +174,7 @@ class BeltPortSenderEntityPatch
                             __result = (BeltPortSenderEntity.SenderMode.Void, null);
                         }
                         MapEntity targetEntity = island.Map.GetEntityAt_G(in targetTile_G);
-                        if (targetEntity is BeltPortReceiverEntity portReceiverEntity)
+                        if (targetEntity is BeltPortReceiverEntity portReceiverEntity && (BetterCatapultsMain.enableWrongRotationReceivers || targetEntity.Rotation_G == rotation_G))
                         {
                             __result = ((portReceiverEntity.Island == island) ? BeltPortSenderEntity.SenderMode.ReceiverSameIsland : BeltPortSenderEntity.SenderMode.ReceiverOtherIsland, portReceiverEntity);
                             return false;
@@ -212,7 +212,7 @@ class BeltPortSenderEntityPatch
                             __result = (BeltPortSenderEntity.SenderMode.Void, null);
                         }
                         MapEntity targetEntity = island.Map.GetEntityAt_G(in targetTile_G);
-                        if (targetEntity is BeltPortReceiverEntity portReceiverEntity)
+                        if (targetEntity is BeltPortReceiverEntity portReceiverEntity && (BetterCatapultsMain.enableWrongRotationReceivers || targetEntity.Rotation_G == rotation_G))
                         {
                             __result = ((portReceiverEntity.Island == island) ? BeltPortSenderEntity.SenderMode.ReceiverSameIsland : BeltPortSenderEntity.SenderMode.ReceiverOtherIsland, portReceiverEntity);
                             return false;

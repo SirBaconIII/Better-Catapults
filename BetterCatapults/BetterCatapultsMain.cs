@@ -3,8 +3,12 @@ using HarmonyLib;
 using System.Reflection;
 using UnityEngine;
 using BetterCatapults;
+using System.IO;
+using System.Collections.Generic;
+using System;
+using System.Linq;
 
-[assembly: MelonInfo(typeof(BetterCatapultsMain), "Better Catapults", "1.8.1", "SirBaconIII")]
+[assembly: MelonInfo(typeof(BetterCatapultsMain), "Better Catapults", "1.9.0", "SirBaconIII")]
 [assembly: MelonGame("tobspr Games", "shapez 2")]
 namespace BetterCatapults
 {
@@ -31,9 +35,9 @@ namespace BetterCatapults
             AllBelowAllAbove
         }
 
-        private static string[] targetingModeStrings = new string[] {"Vanilla", "Line Forward", "Line Forward/Back", "Square Area" };
-        private static string[] trajectoryModeStrings = new string[] { "Linear", "Parabola", "Exponential"};
-        private static string[] layerCheckingModeStrings = new string[] { "Alternating Above/Below", "Alternating Below/Above", "All Above, All Below", "All Below, All Above"};
+        private static string[] targetingModeStrings = new string[] { "Vanilla", "Line Forward", "Line Forward/Back", "Square Area" };
+        private static string[] trajectoryModeStrings = new string[] { "Linear", "Parabola", "Exponential" };
+        private static string[] layerCheckingModeStrings = new string[] { "Alternating Above/Below", "Alternating Below/Above", "All Above, All Below", "All Below, All Above" };
 
         public static TargetingModes currentTargetingMode = TargetingModes.LineForward; //Defaults to line forward targeting
         public static TrajectoryModes currentTrajectoryMode = TrajectoryModes.Parabola; //Defaults to parabola trajectory
@@ -42,6 +46,7 @@ namespace BetterCatapults
         public static bool autoPlacing = false; //Defaults to disabling auto placing
         public static bool layersFirst = true; // Defaults to checking whole layers at once
         public static bool enableCollision = false; //Defaults to no collision check
+        public static bool enableWrongRotationReceivers = true; //Defaults to allowing launching to wrong rotation receivers
         public static bool sillyMode = false; //Defaults to not silly
         public static int range = 100; //Defaults to 100 tile range
         public static int squareRange = 8; //Defaults to 9x9 square
@@ -49,24 +54,54 @@ namespace BetterCatapults
 
         public static bool renderGui = false;
 
-        /*
-        private static KeyCode targetingModeKey = KeyCode.UpArrow; 
-        private static KeyCode trajectoryModeKey = KeyCode.DownArrow;
-        private static KeyCode layerCheckingModeKey = KeyCode.RightAlt;
-        private static KeyCode trashKey = KeyCode.LeftArrow;
-        private static KeyCode autoPlacingKey = KeyCode.RightArrow;
-        private static KeyCode layersFirstKey = KeyCode.RightControl;
-        
-        private static KeyCode rangeIncreaseKey = KeyCode.RightBracket;
-        private static KeyCode rangeDecreaseKey = KeyCode.LeftBracket;
-        private static KeyCode layersCheckedIncreaseKey = KeyCode.Period;
-        private static KeyCode layersCheckedDecreaseKey = KeyCode.Comma;
-        */
+        static string configVer = "1.0.0";
+        static string configFilePath;
+        static Dictionary<string, object> variablesDict = new Dictionary<string, object>
+        {
+            { nameof(currentTargetingMode), currentTargetingMode },
+            { nameof(currentTrajectoryMode), currentTrajectoryMode },
+            { nameof(currentLayerCheckingMode), currentLayerCheckingMode },
+            { nameof(targetTrash), targetTrash },
+            { nameof(autoPlacing), autoPlacing },
+            { nameof(layersFirst), layersFirst },
+            { nameof(enableCollision), enableCollision },
+            { nameof(enableWrongRotationReceivers), enableWrongRotationReceivers },
+            { nameof(sillyMode), sillyMode },
+            { nameof(range), range },
+            { nameof(squareRange), squareRange },
+            { nameof(layersChecked), layersChecked }
+        };
 
         private static KeyCode renderGuiKey = KeyCode.F5;
 
         public override void OnInitializeMelon()
-        {            
+        {
+            //Create the config file if it doesnt exist
+            configFilePath = Path.GetFullPath(".") + "/Mods/config";
+            Directory.CreateDirectory(configFilePath);
+
+            //Get the path to the mod config. If it doesnt exist, create it and instantialize values. If it does, load the values
+            configFilePath = Path.Combine(configFilePath, "BetterCatapults.txt");
+            if (!File.Exists(configFilePath))
+            {
+                File.CreateText(configFilePath).Dispose();
+                SaveConfig();
+            }
+            else
+            {
+                if (File.ReadLines(configFilePath).ElementAt(0).Split(new[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries).LastOrDefault() == configVer)
+                {
+                    LoadConfig();
+                }
+                //If the config file is out of date, a new one will be generated.
+                else
+                {
+                    MelonLogger.Msg("Config file is out of date and will be regenerated. This will reset all of your settings");
+                    SaveConfig();
+                }
+                
+            }
+
             HarmonyLib.Harmony harmony = this.HarmonyInstance;
 
             //Patches for changing the targeting calculations
@@ -99,186 +134,15 @@ namespace BetterCatapults
             harmony.Patch(drawAdditionalHelpersReceiver, prefix: new HarmonyMethod(placementHelpersPrefix));
 
             MelonLogger.Msg("Press " + renderGuiKey.ToString() + " to open the settings menu");
-            //MelonLogger.Msg("Use up arrow to change the targeting mode and down arrow to change trajectory mode. Use left arrow to toggle targeting trash and right arrow to toggle auto placing of catapults / receivers. Use right bracket and left bracket to increase and decrease the range respectively. Use Right control to toggle between checking each layer one at a time, or checking every layer in a tile at the same time. Defaults to checking each layer one at a time. Change the amount of layers checked in increments of two using comma to decrease and period to increase, defaults to 3 layers checked. Change the mode of checking layers by pressing right alt.");
-            //MelonLogger.Msg("Available targeting modes: Vanilla targeting, Line forward, Line forward/backward, square area. Default Line forward");
-            //MelonLogger.Msg("Available trajectory modes: Linear, Parabola, Exponential. Default Parabola");
-            //MelonLogger.Msg("Available layer checking modes: Alternating Above/Below, Alternating Below/Above, All Above, All Below. Defaults to Alternating Above/Below");
-        } 
+        }
+
+        public override void OnDeinitializeMelon()
+        {
+            SaveConfig();
+        }
 
         public override void OnLateUpdate()
         {
-            /*
-            if (Input.GetKeyDown(targetingModeKey))
-            {
-                switch (currentTargetingMode)
-                {
-                    case TargetingModes.Vanilla:
-                        currentTargetingMode = TargetingModes.LineForward;
-                        MelonLogger.Msg("Switched to line forward targeting mode");
-                        break;
-                    case TargetingModes.LineForward:
-                        currentTargetingMode = TargetingModes.LineForwardBackward;
-                        MelonLogger.Msg("Switched to line forward/back targeting mode.");
-                        break;
-                    case TargetingModes.LineForwardBackward:
-                        currentTargetingMode = TargetingModes.SquareArea;
-                        MelonLogger.Msg("Switched to area targeting mode.");
-                        break;
-                    case TargetingModes.SquareArea:
-                        currentTargetingMode = TargetingModes.Vanilla;
-                        MelonLogger.Msg("Switched to vanilla targeting mode.");
-                        break;
-                }
-            }
-            
-            if (Input.GetKeyDown(trajectoryModeKey))
-            {
-                switch (currentTrajectoryMode)
-                {
-                    case TrajectoryModes.Linear:
-                        currentTrajectoryMode = TrajectoryModes.Parabola;
-                        MelonLogger.Msg("Switched to parabola trajectory mode.");
-                        break;
-                    case TrajectoryModes.Parabola:
-                        currentTrajectoryMode = TrajectoryModes.Exponential;
-                        MelonLogger.Msg("Switched to exponential trajectory mode.");
-                        break;
-                    case TrajectoryModes.Exponential:
-                        currentTrajectoryMode = TrajectoryModes.Linear;
-                        MelonLogger.Msg("Switched to linear trajectory mode.");
-                        break;
-                }
-            }
-
-            if (Input.GetKeyDown(trashKey))
-            {
-                targetTrash = !targetTrash;
-                if (targetTrash)
-                {
-                    MelonLogger.Msg("Targeting Trash enabled");
-                }
-                else
-                {
-                    MelonLogger.Msg("Targeting Trash disabled");
-                }
-            }
-
-            if (Input.GetKeyDown(autoPlacingKey))
-            {
-                autoPlacing = !autoPlacing;
-                if (autoPlacing)
-                {
-                    MelonLogger.Msg("Automatic Placing enabled");
-                }
-                else
-                {
-                    MelonLogger.Msg("Automatic Placing disabled");
-                }
-            }
-
-            if (Input.GetKeyDown(rangeIncreaseKey))
-            {
-                switch (currentTargetingMode)
-                {
-                    case TargetingModes.Vanilla:
-                    case TargetingModes.LineForward:
-                    case TargetingModes.LineForwardBackward:
-                        if (range >= 10)
-                        {
-                            range += 10;
-                        }
-                        else
-                        {
-                            range += 1;
-                        }
-                        MelonLogger.Msg("Range has increased to: " + range);
-                        break;
-                    case TargetingModes.SquareArea:
-                        squareRange += 1;
-                        MelonLogger.Msg("Square range has increased to: " + (squareRange * 2));
-                        break;
-                }
-            }
-
-            if (Input.GetKeyDown(rangeDecreaseKey))
-            {
-                switch (currentTargetingMode)
-                {
-                    case TargetingModes.Vanilla:
-                    case TargetingModes.LineForward:
-                    case TargetingModes.LineForwardBackward:
-                        if (range > 10) 
-                        {
-                            range -= 10;
-                        }
-                        else if (range > 0)
-                        {
-                            range -= 1;
-                        }
-                        MelonLogger.Msg("Range has decreased to: " + range);
-                        break;
-                    case TargetingModes.SquareArea:
-                        if (squareRange > 1)
-                        {
-                            squareRange -= 1;
-                            MelonLogger.Msg("Square range has decreased to: " + (squareRange * 2));
-                        }
-                        break;
-                }
-            }
-
-            if (Input.GetKeyDown(layersCheckedIncreaseKey))
-            {
-                layersChecked += 2;
-                MelonLogger.Msg("Number of layers checked has increased to: " + layersChecked);
-            }
-
-            if (Input.GetKeyDown(layersCheckedDecreaseKey))
-            {
-                if(layersChecked > 2)
-                {
-                    layersChecked -= 2;
-                    MelonLogger.Msg("Number of layers checked has decreased to: " + layersChecked);
-                }
-            }
-
-            if (Input.GetKeyDown(layersFirstKey))
-            {
-                layersFirst = !layersFirst;
-                if (layersFirst)
-                {
-                    MelonLogger.Msg("Entire layers will he checked before tiles");
-                }
-                else
-                {
-                    MelonLogger.Msg("All layers in a tile will be checked at once");
-                }
-            }
-
-            if (Input.GetKeyDown(layerCheckingModeKey))
-            {
-                switch (currentLayerCheckingMode)
-                {
-                    case LayerCheckingModes.AlternatingAboveBelow:
-                        currentLayerCheckingMode = LayerCheckingModes.AlternatingBelowAbove;
-                        MelonLogger.Msg("Layer checking mode has changed to Alternating Below/Above");
-                        break;
-                    case LayerCheckingModes.AlternatingBelowAbove:
-                        currentLayerCheckingMode = LayerCheckingModes.AllAboveAllBelow;
-                        MelonLogger.Msg("Layer checking mode has changed to All above then all below");
-                        break;
-                    case LayerCheckingModes.AllAboveAllBelow:
-                        currentLayerCheckingMode = LayerCheckingModes.AllBelowAllAbove;
-                        MelonLogger.Msg("Layer checking mode has changed to All below then all above");
-                        break;
-                    case LayerCheckingModes.AllBelowAllAbove:
-                        currentLayerCheckingMode = LayerCheckingModes.AlternatingAboveBelow;
-                        MelonLogger.Msg("Layer checking mode has changed to Alternating Above/Below");
-                        break;
-                }
-            }
-            */
-
             if (Input.GetKeyDown(renderGuiKey))
             {
                 renderGui = !renderGui;
@@ -313,12 +177,97 @@ namespace BetterCatapults
 
                 layersFirst = GUILayout.Toggle(layersFirst, "Check whole layers one at a time");
                 targetTrash = GUILayout.Toggle(targetTrash, "Targeting trash");
+                enableWrongRotationReceivers = GUILayout.Toggle(enableWrongRotationReceivers, "Enable launching to receivers with a wrong rotation");
                 autoPlacing = GUILayout.Toggle(autoPlacing, "Auto place receievers/catapults");
                 enableCollision = GUILayout.Toggle(enableCollision, "Enable the collision check when shapes are mid air");
                 sillyMode = GUILayout.Toggle(sillyMode, "Silly mode");
 
                 GUILayout.EndArea();
             }
+        }
+
+        static void LoadConfig()
+        {
+            IEnumerable<string> lines = File.ReadLines(configFilePath);
+            //We start at the second line instead of the first because the first line is reserved for the config version
+            for (int i = 1; i < variablesDict.Count + 1; i++)
+            {
+                string line = lines.ElementAt(i);
+                string[] words = line.Split(new[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+                string key = words.FirstOrDefault();
+                string value = words.LastOrDefault();
+
+                if (key != null && value != null)
+                {
+                    //Since LoadConfig is only called on startup, it's ok to use reflection even though its an expensive operation
+                    FieldInfo field = typeof(BetterCatapultsMain).GetField(key);
+                    if (field != null)
+                    {
+                        Type fieldType = field.FieldType;
+
+                        switch (Type.GetTypeCode(fieldType))
+                        {
+                            case TypeCode.String:
+                                field.SetValue(null, value);
+                                break;
+                            case TypeCode.Int32:
+                                //Enums have an Int32 type code
+                                if (fieldType.IsEnum)
+                                {
+                                    if (Enum.TryParse(fieldType, value, out var enumValue))
+                                    {
+                                        field.SetValue(null, enumValue);
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"Invalid value for {key}. Expected a valid enum name, got {value}.");
+                                    }
+                                }
+                                else
+                                {
+                                    field.SetValue(null, int.Parse(value));
+                                }
+                                break;
+                            case TypeCode.Boolean:
+                                field.SetValue(null, bool.Parse(value));
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+        static void SaveConfig()
+        {
+            RefreshVariableDict();
+
+            using (StreamWriter sw = new StreamWriter(configFilePath))
+            {
+                sw.WriteLine($"CONFIG_VER: {configVer}");
+                for (int i = 0; i < variablesDict.Count; i++)
+                {
+                    KeyValuePair<string, object> pair = variablesDict.ElementAt(i);
+                    sw.WriteLine($"{pair.Key} = {pair.Value}");
+                }
+                sw.Close();
+            }
+        }
+        static void RefreshVariableDict()
+        {
+            variablesDict = new Dictionary<string, object>
+        {
+            { nameof(currentTargetingMode), currentTargetingMode },
+            { nameof(currentTrajectoryMode), currentTrajectoryMode },
+            { nameof(currentLayerCheckingMode), currentLayerCheckingMode },
+            { nameof(targetTrash), targetTrash },
+            { nameof(autoPlacing), autoPlacing },
+            { nameof(layersFirst), layersFirst },
+            { nameof(enableCollision), enableCollision },
+            { nameof(enableWrongRotationReceivers), enableWrongRotationReceivers },
+            { nameof(sillyMode), sillyMode },
+            { nameof(range), range },
+            { nameof(squareRange), squareRange },
+            { nameof(layersChecked), layersChecked }
+        };
         }
     }
 }
