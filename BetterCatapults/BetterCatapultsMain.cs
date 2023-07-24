@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 
-[assembly: MelonInfo(typeof(BetterCatapultsMain), "Better Catapults", "1.9.0", "SirBaconIII")]
+[assembly: MelonInfo(typeof(BetterCatapultsMain), "Better Catapults", "1.9.1", "SirBaconIII")]
 [assembly: MelonGame("tobspr Games", "shapez 2")]
 namespace BetterCatapults
 {
@@ -51,10 +51,11 @@ namespace BetterCatapults
         public static int range = 100; //Defaults to 100 tile range
         public static int squareRange = 8; //Defaults to 9x9 square
         public static int layersChecked = 3; //Defaults to 1 layer above and below.
+        public static float heightMultiplier = 1.0f; //Defaults to 1x height multiplier
 
         public static bool renderGui = false;
 
-        static string configVer = "1.0.0";
+        static string configVer = "2";
         static string configFilePath;
         static Dictionary<string, object> variablesDict = new Dictionary<string, object>
         {
@@ -89,6 +90,7 @@ namespace BetterCatapults
             }
             else
             {
+                
                 if (File.ReadLines(configFilePath).ElementAt(0).Split(new[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries).LastOrDefault() == configVer)
                 {
                     LoadConfig();
@@ -133,7 +135,7 @@ namespace BetterCatapults
             harmony.Patch(drawAdditionalHelpersSender, prefix: new HarmonyMethod(placementHelpersPrefix));
             harmony.Patch(drawAdditionalHelpersReceiver, prefix: new HarmonyMethod(placementHelpersPrefix));
 
-            MelonLogger.Msg("Press " + renderGuiKey.ToString() + " to open the settings menu");
+            MelonLogger.Msg($"Press {renderGuiKey} to open the settings menu");
         }
 
         public override void OnDeinitializeMelon()
@@ -156,15 +158,20 @@ namespace BetterCatapults
                 GUI.Box(new Rect(10, 10, 420, Screen.height - 20), "Better Catapults Settings");
                 GUILayout.BeginArea(new Rect(20, 40, 400, Screen.height - 60));
 
-                GUILayout.Label("Range: " + range.ToString());
+                GUILayout.Label($"Range: {range}");
                 range = (int)GUILayout.HorizontalSlider(range, 0f, 300f);
 
-                GUILayout.Label("Square range: " + squareRange.ToString());
+                GUILayout.Label($"Square range: {squareRange}");
                 squareRange = (int)GUILayout.HorizontalSlider(squareRange, 0f, 25f);
 
-                GUILayout.Label("Number of layers: " + layersChecked.ToString());
+                GUILayout.Label($"Number of layers: {layersChecked}");
                 layersChecked = (int)GUILayout.HorizontalSlider(layersChecked, 1f, Singleton<GameCore>.G.Mode.MaxLayer + 1);
                 layersChecked = layersChecked % 2 == 0 ? layersChecked + 1 : layersChecked;
+
+                GUILayout.Label($"Trajectory height multiplier: {heightMultiplier}");
+                heightMultiplier = GUILayout.HorizontalSlider(heightMultiplier, -50f, 50f);
+                heightMultiplier = (float)Math.Round(heightMultiplier, 1);
+                heightMultiplier = heightMultiplier == 0 ? 0.1f : heightMultiplier;
 
                 GUILayout.Label("Targeting Mode");
                 currentTargetingMode = (TargetingModes)GUILayout.SelectionGrid((int)currentTargetingMode, targetingModeStrings, 2);
@@ -181,6 +188,14 @@ namespace BetterCatapults
                 autoPlacing = GUILayout.Toggle(autoPlacing, "Auto place receievers/catapults");
                 enableCollision = GUILayout.Toggle(enableCollision, "Enable the collision check when shapes are mid air");
                 sillyMode = GUILayout.Toggle(sillyMode, "Silly mode");
+
+                GUILayout.Height(40);
+
+                if (GUILayout.Button("Reset default settings"))
+                {
+                    SaveConfig(false);
+                    LoadConfig();
+                }
 
                 GUILayout.EndArea();
             }
@@ -199,7 +214,7 @@ namespace BetterCatapults
 
                 if (key != null && value != null)
                 {
-                    //Since LoadConfig is only called on startup, it's ok to use reflection even though its an expensive operation
+                    //using reflection cause i hate delegates
                     FieldInfo field = typeof(BetterCatapultsMain).GetField(key);
                     if (field != null)
                     {
@@ -210,6 +225,7 @@ namespace BetterCatapults
                             case TypeCode.String:
                                 field.SetValue(null, value);
                                 break;
+
                             case TypeCode.Int32:
                                 //Enums have an Int32 type code
                                 if (fieldType.IsEnum)
@@ -228,6 +244,11 @@ namespace BetterCatapults
                                     field.SetValue(null, int.Parse(value));
                                 }
                                 break;
+
+                            case TypeCode.Single:
+                                field.SetValue (null, float.Parse(value));
+                                break;
+
                             case TypeCode.Boolean:
                                 field.SetValue(null, bool.Parse(value));
                                 break;
@@ -236,10 +257,14 @@ namespace BetterCatapults
                 }
             }
         }
-        static void SaveConfig()
-        {
-            RefreshVariableDict();
 
+        static void SaveConfig(bool refreshVars = true)
+        {
+            if (refreshVars) 
+            {
+                RefreshVariableDict();
+            }
+            
             using (StreamWriter sw = new StreamWriter(configFilePath))
             {
                 sw.WriteLine($"CONFIG_VER: {configVer}");
@@ -251,6 +276,7 @@ namespace BetterCatapults
                 sw.Close();
             }
         }
+
         static void RefreshVariableDict()
         {
             variablesDict = new Dictionary<string, object>
@@ -266,7 +292,8 @@ namespace BetterCatapults
             { nameof(sillyMode), sillyMode },
             { nameof(range), range },
             { nameof(squareRange), squareRange },
-            { nameof(layersChecked), layersChecked }
+            { nameof(layersChecked), layersChecked },
+            { nameof(heightMultiplier), heightMultiplier}
         };
         }
     }

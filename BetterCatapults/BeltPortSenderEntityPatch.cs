@@ -304,11 +304,12 @@ class BeltPortSenderEntityPatch
         FieldInfo DIRECTION_TO_ROTATION_FI = beltPortType.GetField("DIRECTION_TO_ROTATION", BindingFlags.Static | BindingFlags.NonPublic);
 
         int intRotation_G = (int)__instance.Rotation_G;
+        float heightMultiplier = BetterCatapultsMain.heightMultiplier;
 
         float distance = 0;
         float diffx = 0;
         float diffy = 0;
-        float heightDifference = 0;
+        float heightDifference;
 
         BeltPathLogic Path = (BeltPathLogic)Path_FI.GetValue(__instance);
         float3[] DIRECTION_TO_ROTATION = (float3[])DIRECTION_TO_ROTATION_FI.GetValue(__instance);
@@ -331,8 +332,7 @@ class BeltPortSenderEntityPatch
                 }
             }
             
-            
-            heightDifference = targetEntityTile.z - beltPortTile.z;
+            heightDifference = (targetEntityTile.z - beltPortTile.z) / heightMultiplier;
         }
         else if ((BeltPortSenderEntity.SenderMode)Mode_FI.GetValue(__instance) == BeltPortSenderEntity.SenderMode.Void)
         {
@@ -364,7 +364,7 @@ class BeltPortSenderEntityPatch
                     }
                     else
                     {
-                        height += - progress + heightDifference + 1;
+                        height += (-progress + heightDifference + 1);
                     }
                     break;
                 case BetterCatapultsMain.TrajectoryModes.Parabola:
@@ -378,11 +378,13 @@ class BeltPortSenderEntityPatch
                     }
                     break;
                 case BetterCatapultsMain.TrajectoryModes.Exponential:
-                    height += (float)((heightDifference + 1) / Math.Pow(1 + Math.Exp(-10 * progress), 10f)) - progress;
+                    height += ((float)((heightDifference + 1) / Math.Pow(1 + Math.Exp(-10 * progress), 10f)) - progress);
                     break;
             }
+            height *= heightMultiplier;
+
             float3 pos_L = new float3();
-            float3 euler = new float3();
+            float3 euler;
             if (BetterCatapultsMain.currentTargetingMode == BetterCatapultsMain.TargetingModes.SquareArea)
             {
                 euler = new float3(1300, 1800, 1400) * rotation;
