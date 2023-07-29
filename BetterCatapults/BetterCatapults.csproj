@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>..\..\..\..\OneDrive\Desktop\Games\Shapez 2\shapez_2_0.0.0-alpha6.1\MelonLoader\net35\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="MelonLoader">
+      <HintPath>..\..\..\..\OneDrive\Desktop\Games\Shapez 2\shapez_2_0.0.0-alpha6.1\MelonLoader\net35\MelonLoader.dll</HintPath>
+    </Reference>
+    <Reference Include="ModSettings">
+      <HintPath>..\..\ModSettings\ModSettings\bin\Debug\netstandard2.1\ModSettings.dll</HintPath>
+    </Reference>
+    <Reference Include="SPZGameAssembly">
+      <HintPath>..\..\..\..\OneDrive\Desktop\Games\Shapez 2\shapez_2_0.0.0-alpha6.1\shapez 2_Data\Managed\SPZGameAssembly.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Mathematics">
+      <HintPath>..\..\..\..\OneDrive\Desktop\Games\Shapez 2\shapez_2_0.0.0-alpha6.1\shapez 2_Data\Managed\Unity.Mathematics.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\..\..\..\OneDrive\Desktop\Games\Shapez 2\shapez_2_0.0.0-alpha6.1\shapez 2_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>..\..\..\..\OneDrive\Desktop\Games\Shapez 2\shapez_2_0.0.0-alpha6.1\shapez 2_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>..\..\..\..\OneDrive\Desktop\Games\Shapez 2\shapez_2_0.0.0-alpha6.1\shapez 2_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
